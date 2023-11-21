@@ -1,13 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert, Button as RNButton } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Sharing from 'expo-sharing';
+import firebase from 'firebase/app';
 
 export default function App() {
   const [image, setImage] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -77,9 +79,32 @@ export default function App() {
     }
   };
 
+  const handleCreateAccount = async () => {
+    try {
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(username, password);
+      console.log('User created successfully:', userCredential.user);
+      Alert.alert('Usuario Registrado', 'Gracias por tu registro');
+    } catch (error) {
+      console.error('Error creating user:', error.message);
+      Alert.alert('Error', 'Hubo un problema al crear la cuenta. Por favor, inténtalo de nuevo.');
+    }
+  };
+
+  const handleSwitchForm = () => {
+    setIsCreatingAccount(!isCreatingAccount);
+  };
+
+  const handleSubmitForm = () => {
+    if (isCreatingAccount) {
+      handleCreateAccount();
+    } else {
+      handleLogin();
+    }
+  };
+
   const handleLogin = () => {
     if (username.trim() !== '' && password.trim() !== '') {
-      Alert.alert('Usuario Registrado', 'Gracias por tu registro');
+      Alert.alert('Inicio de Sesión', 'Bienvenido de vuelta');
     } else {
       Alert.alert('Los campos no pueden estar vacios', 'Por favor rellena los campos');
     }
@@ -87,7 +112,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Inicio de Sesión</Text>
+      <Text style={styles.title}>{isCreatingAccount ? 'Creación de Cuenta' : 'Inicio de Sesión'}</Text>
       <Image
         source={{ uri: image ? image : 'default-avatar-photo-placeholder-profile-icon-vector' }}
         style={styles.image}
@@ -102,10 +127,10 @@ export default function App() {
       </View>
       <TextInput
         style={styles.input}
-        placeholder="Username"
+        placeholder="Email"
         onChangeText={(text) => setUsername(text)}
         value={username}
-        placeholderTextColor="#fff" // White text color
+        placeholderTextColor="#fff"
       />
       <TextInput
         style={styles.input}
@@ -113,10 +138,15 @@ export default function App() {
         onChangeText={(text) => setPassword(text)}
         value={password}
         secureTextEntry
-        placeholderTextColor="#fff" // White text color
+        placeholderTextColor="#fff"
       />
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Iniciar Sesión</Text>
+      <TouchableOpacity style={styles.formButton} onPress={handleSubmitForm}>
+        <Text style={styles.buttonText}>{isCreatingAccount ? 'Crear Cuenta' : 'Iniciar Sesión'}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.switchFormButton} onPress={handleSwitchForm}>
+        <Text style={styles.switchFormButtonText}>
+          {isCreatingAccount ? '¿Ya tienes una cuenta? Inicia Sesión' : '¿No tienes cuenta? Crea una'}
+        </Text>
       </TouchableOpacity>
       <StatusBar style="auto" />
     </View>
@@ -133,7 +163,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#00FFFF', // Neon Cyan
+    color: '#00FFFF', 
     marginBottom: 20,
   },
   image: {
@@ -141,7 +171,7 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 75,
     marginVertical: 20,
-    borderColor: '#00FFFF', // Neon Cyan
+    borderColor: '#00FFFF', 
     borderWidth: 2,
   },
   buttonContainer: {
@@ -151,29 +181,36 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#00FFFF', // Neon Cyan
+    backgroundColor: '#00FFFF',
     padding: 10,
     borderRadius: 5,
     width: '48%',
   },
-  loginButton: {
-    backgroundColor: '#00FFFF', // Neon Cyan
+  formButton: {
+    backgroundColor: '#00FFFF', 
     padding: 15,
     borderRadius: 8,
     marginVertical: 20,
     width: '80%',
   },
+  switchFormButton: {
+    marginTop: 10,
+  },
+  switchFormButtonText: {
+    color: '#00FFFF', 
+    textDecorationLine: 'underline',
+  },
   buttonText: {
-    color: '#000', // Black
+    color: '#000', 
     textAlign: 'center',
   },
   input: {
     height: 40,
     width: '80%',
-    borderColor: '#00FFFF', // Neon Cyan
+    borderColor: '#00FFFF', 
     borderWidth: 1,
     marginVertical: 10,
     padding: 10,
-    color: '#fff', // White
+    color: '#fff', 
   },
 });
