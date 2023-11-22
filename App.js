@@ -3,7 +3,21 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Sharing from 'expo-sharing';
-import firebase from 'firebase/app';
+import { initializeApp } from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAi9cC_9VFI8n0KmYgMRQMvgO9h3lz-c3U",
+  authDomain: "automatizacion-7d1cd.firebaseapp.com",
+  projectId: "automatizacion-7d1cd",
+  storageBucket: "automatizacion-7d1cd.appspot.com",
+  messagingSenderId: "237372577856",
+  appId: "1:237372577856:web:1ec0594146bf0b7aada7a5",
+  measurementId: "G-15XHKQ6EZR"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
 
 export default function App() {
   const [image, setImage] = useState(null);
@@ -81,7 +95,7 @@ export default function App() {
 
   const handleCreateAccount = async () => {
     try {
-      const userCredential = await firebase.auth().createUserWithEmailAndPassword(username, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, username, password);
       console.log('User created successfully:', userCredential.user);
       Alert.alert('Usuario Registrado', 'Gracias por tu registro');
     } catch (error) {
@@ -163,7 +177,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#00FFFF', 
+    color: '#00FFFF', // Neon Cyan
     marginBottom: 20,
   },
   image: {
@@ -171,7 +185,7 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 75,
     marginVertical: 20,
-    borderColor: '#00FFFF', 
+    borderColor: '#00FFFF', // Neon Cyan
     borderWidth: 2,
   },
   buttonContainer: {
@@ -181,13 +195,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#00FFFF',
+    backgroundColor: '#00FFFF', // Neon Cyan
     padding: 10,
     borderRadius: 5,
     width: '48%',
   },
   formButton: {
-    backgroundColor: '#00FFFF', 
+    backgroundColor: '#00FFFF', // Neon Cyan
     padding: 15,
     borderRadius: 8,
     marginVertical: 20,
@@ -197,20 +211,21 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   switchFormButtonText: {
-    color: '#00FFFF', 
+    color: '#00FFFF', // Neon Cyan
     textDecorationLine: 'underline',
   },
   buttonText: {
-    color: '#000', 
+    color: '#000', // Black
     textAlign: 'center',
   },
   input: {
     height: 40,
     width: '80%',
-    borderColor: '#00FFFF', 
+    borderColor: '#00FFFF', // Neon Cyan
     borderWidth: 1,
     marginVertical: 10,
     padding: 10,
-    color: '#fff', 
+    color: '#fff', // White
   },
 });
+
